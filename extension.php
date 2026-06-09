@@ -1,6 +1,6 @@
 <?php
 
-class ReadeckButtonExtension extends Minz_Extension
+class TubeArchivistButtonExtension extends Minz_Extension
 {
   #[\Override]
   public function init()
@@ -9,9 +9,9 @@ class ReadeckButtonExtension extends Minz_Extension
 
     Minz_View::appendScript($this->getFileUrl('script.js'), false, false, false);
     Minz_View::appendStyle($this->getFileUrl('style.css'));
-    Minz_View::appendScript(strval(_url('readeckButton', 'jsVars')), false, true, false);
+    Minz_View::appendScript(strval(_url('tubearchivistButton', 'jsVars')), false, true, false);
 
-    $this->registerController('readeckButton');
+    $this->registerController('tubearchivistButton');
     $this->registerViews();
   }
 
@@ -23,43 +23,43 @@ class ReadeckButtonExtension extends Minz_Extension
       return;
     }
 
-    $keyboard_shortcut = Minz_Request::paramString('readeck_shortcut');
-    FreshRSS_Context::userConf()->_attribute('readeck_shortcut', $keyboard_shortcut);
+    $keyboard_shortcut = Minz_Request::paramString('tubearchivist_shortcut');
+    FreshRSS_Context::userConf()->_attribute('tubearchivist_shortcut', $keyboard_shortcut);
     $send_content = Minz_Request::paramString('send_content');
-    FreshRSS_Context::userConf()->_attribute('readeck_content', $send_content);
+    FreshRSS_Context::userConf()->_attribute('tubearchivist_content', $send_content);
     FreshRSS_Context::userConf()->save();
 
-    $button_location = Minz_Request::paramString('readeck_button_location');
-    $url_redirect = array('c' => 'extension', 'a' => 'configure', 'params' => array('e' => 'Readeck Button'));
+    $button_location = Minz_Request::paramString('tubearchivist_button_location');
+    $url_redirect = array('c' => 'extension', 'a' => 'configure', 'params' => array('e' => 'TubeArchivist Button'));
 
     switch ($button_location) {
       case "header_bottom":
       case "header":
       case "bottom":
       case "hidden":
-        FreshRSS_Context::userConf()->_attribute('readeck_button_location', $button_location);
+        FreshRSS_Context::userConf()->_attribute('tubearchivist_button_location', $button_location);
         FreshRSS_Context::userConf()->save();
         break;
       default:
-        Minz_Request::bad(_t('ext.readeckButton.notifications.changes_failed', $button_location), $url_redirect);
+        Minz_Request::bad(_t('ext.tubearchivistButton.notifications.changes_failed', $button_location), $url_redirect);
         return;
     }
 
-    $readeck_behavior = Minz_Request::paramString('readeck_behavior');
-    switch ($readeck_behavior) {
+    $tubearchivist_behavior = Minz_Request::paramString('tubearchivist_behavior');
+    switch ($tubearchivist_behavior) {
       case "smart":
       case "link":
       case "content":
-        FreshRSS_Context::userConf()->_attribute('readeck_behavior', $readeck_behavior);
+        FreshRSS_Context::userConf()->_attribute('tubearchivist_behavior', $tubearchivist_behavior);
         FreshRSS_Context::userConf()->save();
         break;
       default:
-        Minz_Request::bad(_t('ext.readeckButton.notifications.changes_failed', $readeck_behavior), $url_redirect);
+        Minz_Request::bad(_t('ext.tubearchivistButton.notifications.changes_failed', $tubearchivist_behavior), $url_redirect);
         return;
     }
 
     $url_redirect = array('c' => 'extension');
-    Minz_Request::good(_t('ext.readeckButton.notifications.changes_saved_sucessfully'), $url_redirect);
+    Minz_Request::good(_t('ext.tubearchivistButton.notifications.changes_saved_sucessfully'), $url_redirect);
   }
 
   /**
@@ -67,7 +67,7 @@ class ReadeckButtonExtension extends Minz_Extension
    */
   public function isConfigured(): bool
   {
-    return FreshRSS_Context::userConf()->attributeString('readeck_api_token') != '';
+    return FreshRSS_Context::userConf()->attributeString('tubearchivist_api_token') != '';
   }
 
   /**
@@ -75,12 +75,12 @@ class ReadeckButtonExtension extends Minz_Extension
    */
   public function shouldBeShown(string $entryName): bool
   {
-    $headerLocation = FreshRSS_Context::userConf()->attributeString('readeck_button_location');
+    $headerLocation = FreshRSS_Context::userConf()->attributeString('tubearchivist_button_location');
 
     // TO BE REMOVED:
     // Update missing entry after update
     if ($headerLocation == "") {
-      FreshRSS_Context::userConf()->_attribute('readeck_button_location', "header_bottom");
+      FreshRSS_Context::userConf()->_attribute('tubearchivist_button_location', "header_bottom");
       FreshRSS_Context::userConf()->save();
       return true;
     }

@@ -8,18 +8,18 @@ if (document.readyState && document.readyState !== 'loading')
 
 async function documentReady()
 {
-  var readeckButtons = document.querySelectorAll('#stream .flux a.readeckButton');
-  for (var i = 0; i < readeckButtons.length; i++)
+  var tubearchivistButtons = document.querySelectorAll('#stream .flux a.tubearchivistButton');
+  for (var i = 0; i < tubearchivistButtons.length; i++)
   {
-    let readeckButton = readeckButtons[i];
-    readeckButton.addEventListener('click', async function (e)
+    let tubearchivistButton = tubearchivistButtons[i];
+    tubearchivistButton.addEventListener('click', async function (e)
     {
-      if (!readeckButton)
+      if (!tubearchivistButton)
       {
         return;
       }
 
-      var active = readeckButton.closest(".flux");
+      var active = tubearchivistButton.closest(".flux");
       if (!active)
       {
         return;
@@ -28,11 +28,11 @@ async function documentReady()
       e.preventDefault();
       e.stopPropagation();
 
-      await add_to_readeck(readeckButton, active);
+      await add_to_tubearchivist(tubearchivistButton, active);
     }, false);
   }
 
-  if (readeck_button_vars.keyboard_shortcut)
+  if (tubearchivist_button_vars.keyboard_shortcut)
   {
     document.addEventListener('keydown', function (e)
     {
@@ -41,7 +41,7 @@ async function documentReady()
         return;
       }
 
-      if (e.key === readeck_button_vars.keyboard_shortcut)
+      if (e.key === tubearchivist_button_vars.keyboard_shortcut)
       {
         var active = document.querySelector("#stream .flux.active");
         if (!active)
@@ -49,40 +49,40 @@ async function documentReady()
           return;
         }
 
-        var readeckButton = active.querySelector("a.readeckButton");
-        if (!readeckButton)
+        var tubearchivistButton = active.querySelector("a.tubearchivistButton");
+        if (!tubearchivistButton)
         {
           return;
         }
 
-        add_to_readeck(readeckButton, active);
+        add_to_tubearchivist(tubearchivistButton, active);
       }
     });
   }
 }
 
-function requestFailed(activeId, readeckButtonImg, loadingAnimation)
+function requestFailed(activeId, tubearchivistButtonImg, loadingAnimation)
 {
   delete pending_entries[activeId];
 
-  readeckButtonImg.classList.remove("rb_disabled");
+  tubearchivistButtonImg.classList.remove("rb_disabled");
   loadingAnimation.classList.add("rb_disabled");
 
   badAjax(this.status == 403);
 }
 
-async function add_to_readeck(readeckButton, active)
+async function add_to_tubearchivist(tubearchivistButton, active)
 {
-  const url = readeckButton.getAttribute("href");
+  const url = tubearchivistButton.getAttribute("href");
   if (!url)
   {
     return;
   }
 
-  let readeckButtonImg = readeckButton.querySelector("img");
-  readeckButtonImg.classList.add("rb_disabled");
+  let tubearchivistButtonImg = tubearchivistButton.querySelector("img");
+  tubearchivistButtonImg.classList.add("rb_disabled");
 
-  let loadingAnimation = readeckButton.querySelector(".rb_lds-dual-ring");
+  let loadingAnimation = tubearchivistButton.querySelector(".rb_lds-dual-ring");
   loadingAnimation.classList.remove("rb_disabled");
 
   let activeId = active.getAttribute('id');
@@ -108,25 +108,25 @@ async function add_to_readeck(readeckButton, active)
     {
       delete pending_entries[activeId];
 
-      readeckButtonImg.classList.remove("rb_disabled");
+      tubearchivistButtonImg.classList.remove("rb_disabled");
       loadingAnimation.classList.add("rb_disabled");
 
       if (!response.ok)
       {
-        requestFailed(activeId, readeckButtonImg, loadingAnimation);
-        openNotification(readeck_button_vars.i18n.failed_to_add_article_to_readeck.replace('%s', json.errorCode), 'readeck_button_bad');
+        requestFailed(activeId, tubearchivistButtonImg, loadingAnimation);
+        openNotification(tubearchivist_button_vars.i18n.failed_to_add_article_to_tubearchivist.replace('%s', json.errorCode), 'tubearchivist_button_bad');
         return;
       }
 
       let json = await response.json();
       if (!json)
       {
-        requestFailed(activeId, readeckButtonImg, loadingAnimation);
-        openNotification(readeck_button_vars.i18n.failed_to_add_article_to_readeck.replace('%s', json.errorCode), 'readeck_button_bad');
+        requestFailed(activeId, tubearchivistButtonImg, loadingAnimation);
+        openNotification(tubearchivist_button_vars.i18n.failed_to_add_article_to_tubearchivist.replace('%s', json.errorCode), 'tubearchivist_button_bad');
         return;
       }
 
-      console.log(readeck_button_vars);
+      console.log(tubearchivist_button_vars);
       console.log(json.errorCode);
 
       switch (json.errorCode)
@@ -135,32 +135,32 @@ async function add_to_readeck(readeckButton, active)
         case 201:
         case 202:
         case 301:
-          readeckButtonImg.setAttribute("src", readeck_button_vars.icons.added_to_readeck);
-          const notificationContent = readeck_button_vars.i18n.added_article_to_readeck
-            .replace('%s', `${readeck_button_vars.instance_url}/bookmarks/${json.response.bookmarkId}`)
+          tubearchivistButtonImg.setAttribute("src", tubearchivist_button_vars.icons.added_to_tubearchivist);
+          const notificationContent = tubearchivist_button_vars.i18n.added_article_to_tubearchivist
+            .replace('%s', `${tubearchivist_button_vars.instance_url}/bookmarks/${json.response.bookmarkId}`)
             .replace('%s', json.response.title);
-          openNotification(notificationContent, 'readeck_button_good');
+          openNotification(notificationContent, 'tubearchivist_button_good');
           break;
 
         case 401:
-          openNotification(readeck_button_vars.i18n.relog_required, 'readeck_button_bad');
+          openNotification(tubearchivist_button_vars.i18n.relog_required, 'tubearchivist_button_bad');
           break;
 
         case 404:
-          openNotification(readeck_button_vars.i18n.article_not_found, 'readeck_button_bad');
+          openNotification(tubearchivist_button_vars.i18n.article_not_found, 'tubearchivist_button_bad');
           break;
 
         case 500:
-          openNotification(readeck_button_vars.i18n.failed_to_add_article_to_readeck, 'readeck_button_bad');
+          openNotification(tubearchivist_button_vars.i18n.failed_to_add_article_to_tubearchivist, 'tubearchivist_button_bad');
           break;
 
         default:
-          requestFailed(activeId, readeckButtonImg, loadingAnimation);
+          requestFailed(activeId, tubearchivistButtonImg, loadingAnimation);
           break;
       }
     })
     .catch(() =>
     {
-      requestFailed(activeId, readeckButtonImg, loadingAnimation);
+      requestFailed(activeId, tubearchivistButtonImg, loadingAnimation);
     });
 }

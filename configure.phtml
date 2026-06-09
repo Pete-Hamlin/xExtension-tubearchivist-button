@@ -1,90 +1,90 @@
 <?php
 
 declare(strict_types=1);
-/** @var ReadeckButtonExtension $this */
-$instance_url = FreshRSS_Context::userConf()->attributeString('readeck_instance_url');
-$api_token = FreshRSS_Context::userConf()->attributeString('readeck_api_token');
-$username = FreshRSS_Context::userConf()->attributeString('readeck_username');
-$keyboard_shortcut = FreshRSS_Context::userConf()->attributeString('readeck_shortcut');
-$button_location = FreshRSS_Context::userConf()->attributeString('readeck_button_location');
-$behavior = FreshRSS_Context::userConf()->attributeString('readeck_behavior');
+/** @var TubeArchivistButtonExtension $this */
+$instance_url = FreshRSS_Context::userConf()->attributeString('tubearchivist_instance_url');
+$api_token = FreshRSS_Context::userConf()->attributeString('tubearchivist_api_token');
+$username = FreshRSS_Context::userConf()->attributeString('tubearchivist_username');
+$keyboard_shortcut = FreshRSS_Context::userConf()->attributeString('tubearchivist_shortcut');
+$button_location = FreshRSS_Context::userConf()->attributeString('tubearchivist_button_location');
+$behavior = FreshRSS_Context::userConf()->attributeString('tubearchivist_behavior');
 ?>
 
 <form action="<?= _url('extension', 'configure', 'e', urlencode($this->getName())); ?>" method="post">
   <input type="hidden" name="_csrf" value="<?= FreshRSS_Auth::csrfToken(); ?>" />
   <div class="form-group">
-    <label class="group-name" for="readeck_shortcut"><?= _t('ext.readeckButton.configure.keyboard_shortcut'); ?></label>
+    <label class="group-name" for="tubearchivist_shortcut"><?= _t('ext.tubearchivistButton.configure.keyboard_shortcut'); ?></label>
     <div class="group-controls">
-      <input type="text" name="readeck_shortcut" id="readeck_shortcut" maxlength="1" value="<?= $keyboard_shortcut; ?>">
+      <input type="text" name="tubearchivist_shortcut" id="tubearchivist_shortcut" maxlength="1" value="<?= $keyboard_shortcut; ?>">
     </div>
 
-    <label class="group-name" for="readeck_behavior"><?= _t('ext.readeckButton.configure.behavior'); ?></label>
+    <label class="group-name" for="tubearchivist_behavior"><?= _t('ext.tubearchivistButton.configure.behavior'); ?></label>
     <div class="group-controls">
-      <select name="readeck_behavior" id="readeck_behavior" aria-describedby="behavior_description">
-        <option value="smart" <?= ($behavior == "smart") ? "selected" : "" ?>><?= _t('ext.readeckButton.configure.behavior_smart'); ?></option>
-        <option value="link" <?= ($behavior == "link") ? "selected" : "" ?>><?= _t('ext.readeckButton.configure.behavior_link'); ?></option>
-        <option value="content" <?= ($behavior == "content") ? "selected" : "" ?>><?= _t('ext.readeckButton.configure.behavior_content'); ?></option>
+      <select name="tubearchivist_behavior" id="tubearchivist_behavior" aria-describedby="behavior_description">
+        <option value="smart" <?= ($behavior == "smart") ? "selected" : "" ?>><?= _t('ext.tubearchivistButton.configure.behavior_smart'); ?></option>
+        <option value="link" <?= ($behavior == "link") ? "selected" : "" ?>><?= _t('ext.tubearchivistButton.configure.behavior_link'); ?></option>
+        <option value="content" <?= ($behavior == "content") ? "selected" : "" ?>><?= _t('ext.tubearchivistButton.configure.behavior_content'); ?></option>
       </select>
-      <ul id="behavior_description"><?= _t('ext.readeckButton.configure.behavior_description'); ?></ul>
+      <ul id="behavior_description"><?= _t('ext.tubearchivistButton.configure.behavior_description'); ?></ul>
     </div>
 
-    <label class="group-name" for="readeck_button_location"><?= _t('ext.readeckButton.configure.button_location'); ?></label>
+    <label class="group-name" for="tubearchivist_button_location"><?= _t('ext.tubearchivistButton.configure.button_location'); ?></label>
     <div class="group-controls">
-      <select name="readeck_button_location" id="readeck_button_location">
-        <option value="header_bottom" <?= ($button_location == "header_bottom") ? "selected" : "" ?>><?= _t('ext.readeckButton.configure.button_location_header_bottom'); ?></option>
-        <option value="header" <?= ($button_location == "header") ? "selected" : "" ?>><?= _t('ext.readeckButton.configure.button_location_header'); ?></option>
-        <option value="bottom" <?= ($button_location == "bottom") ? "selected" : "" ?>><?= _t('ext.readeckButton.configure.button_location_bottom'); ?></option>
-        <option value="hidden" <?= ($button_location == "hidden") ? "selected" : "" ?>><?= _t('ext.readeckButton.configure.button_location_hidden'); ?></option>
+      <select name="tubearchivist_button_location" id="tubearchivist_button_location">
+        <option value="header_bottom" <?= ($button_location == "header_bottom") ? "selected" : "" ?>><?= _t('ext.tubearchivistButton.configure.button_location_header_bottom'); ?></option>
+        <option value="header" <?= ($button_location == "header") ? "selected" : "" ?>><?= _t('ext.tubearchivistButton.configure.button_location_header'); ?></option>
+        <option value="bottom" <?= ($button_location == "bottom") ? "selected" : "" ?>><?= _t('ext.tubearchivistButton.configure.button_location_bottom'); ?></option>
+        <option value="hidden" <?= ($button_location == "hidden") ? "selected" : "" ?>><?= _t('ext.tubearchivistButton.configure.button_location_hidden'); ?></option>
       </select>
     </div>
   </div>
 
   <div class="form-group form-actions">
     <div class="group-controls">
-      <button type="submit" class="btn btn-important"><?= _t('ext.readeckButton.configure.save_changes'); ?></button>
+      <button type="submit" class="btn btn-important"><?= _t('ext.tubearchivistButton.configure.save_changes'); ?></button>
     </div>
   </div>
 </form>
 
 <?php if ($this->isEnabled() && (empty($username) || empty($api_token) || empty($instance_url))) : ?>
-  <form action="<?= _url('readeckButton', 'requestAccess'); ?>" method="post">
+  <form action="<?= _url('tubearchivistButton', 'requestAccess'); ?>" method="post">
     <input type="hidden" name="_csrf" value="<?= FreshRSS_Auth::csrfToken(); ?>" />
     <div class="form-group">
-      <label class="group-name" for="readeck_instance_url"><?= _t('ext.readeckButton.configure.instance_url'); ?></label>
+      <label class="group-name" for="tubearchivist_instance_url"><?= _t('ext.tubearchivistButton.configure.instance_url'); ?></label>
       <div class="group-controls">
-        <input type="url" name="readeck_instance_url" id="readeck_instance_url" title="Please enter a valid URL starting with http:// or https://" value="<?= $instance_url; ?>" required>
+        <input type="url" name="tubearchivist_instance_url" id="tubearchivist_instance_url" title="Please enter a valid URL starting with http:// or https://" value="<?= $instance_url; ?>" required>
       </div>
-      <label class="group-name" for="readeck_api_token"><?= _t('ext.readeckButton.configure.api_token'); ?></label>
+      <label class="group-name" for="tubearchivist_api_token"><?= _t('ext.tubearchivistButton.configure.api_token'); ?></label>
       <div class="group-controls">
-        <input type="password" name="readeck_api_token" id="readeck_api_token" value="<?= $api_token; ?>" required>
+        <input type="password" name="tubearchivist_api_token" id="tubearchivist_api_token" value="<?= $api_token; ?>" required>
       </div>
     </div>
 
     <div class="alert alert-warn">
-      <?= _t('ext.readeckButton.configure.api_token_description'); ?>
+      <?= _t('ext.tubearchivistButton.configure.api_token_description'); ?>
     </div>
 
     <div class="form-group form-actions">
       <div class="group-controls">
-        <button type="submit" class="btn btn-important"><?= _t('ext.readeckButton.configure.connect_to_readeck'); ?></button>
+        <button type="submit" class="btn btn-important"><?= _t('ext.tubearchivistButton.configure.connect_to_tubearchivist'); ?></button>
       </div>
     </div>
   </form>
 <?php elseif (!$this->isEnabled()) : ?>
   <p class="alert alert-error">
-    <?= _t('ext.readeckButton.configure.extension_disabled'); ?>
+    <?= _t('ext.tubearchivistButton.configure.extension_disabled'); ?>
   </p>
 <?php endif ?>
 
 <?php if (!empty($username) && !empty($api_token) && !empty($instance_url)) : ?>
   <p class="alert alert-success">
-    <?= _t('ext.readeckButton.configure.connected_to_readeck', $username, $instance_url); ?>
+    <?= _t('ext.tubearchivistButton.configure.connected_to_tubearchivist', $username, $instance_url); ?>
   </p>
-  <form action="<?= _url('readeckButton', 'revokeAccess'); ?>" method="post">
+  <form action="<?= _url('tubearchivistButton', 'revokeAccess'); ?>" method="post">
     <input type="hidden" name="_csrf" value="<?= FreshRSS_Auth::csrfToken(); ?>" />
     <div class="form-group form-actions">
       <div class="group-controls">
-        <button type="submit" class="btn btn-important"><?= _t('ext.readeckButton.configure.revoke_access'); ?></button>
+        <button type="submit" class="btn btn-important"><?= _t('ext.tubearchivistButton.configure.revoke_access'); ?></button>
       </div>
     </div>
   </form>

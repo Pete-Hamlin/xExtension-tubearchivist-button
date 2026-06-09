@@ -1,24 +1,24 @@
-.notification.readeck_button_good,
-.notification.readeck_button_bad {
+.notification.tubearchivist_button_good,
+.notification.tubearchivist_button_bad {
   position: fixed;
   color: #fff;
   left: 20%;
   right: 20%;
 }
 
-.notification.readeck_button_bad {
+.notification.tubearchivist_button_bad {
   background: #e74c3c;
 }
 
-.notification.readeck_button_good {
+.notification.tubearchivist_button_good {
   background: #1abc9c;
 }
 
-input#readeck_api_token {
+input#tubearchivist_api_token {
   width: 300px;
 }
 
-input#readeck_shortcut {
+input#tubearchivist_shortcut {
   width: 30px;
 }
 

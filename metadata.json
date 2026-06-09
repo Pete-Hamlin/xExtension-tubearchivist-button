@@ -1,8 +1,9 @@
 {
-  "name": "Readeck Button",
-  "author": "Joedmin",
-  "description": "Add articles to Readeck with one simple button click or a keyboard shortcut.",
-  "version": 0.14,
-  "entrypoint": "ReadeckButton",
+  "name": "TubeArchivist Button",
+  "author": "Pete-Hamlin",
+  "description": "Add videos to TubeArchivist with one simple button click or a keyboard shortcut.",
+  "version": 0.1,
+  "entrypoint": "TubeArchivistButton",
   "type": "user"
 }
+
