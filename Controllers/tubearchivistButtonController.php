@@ -17,11 +17,10 @@ class FreshExtension_tubearchivistButton_Controller extends Minz_ActionControlle
         'added_to_tubearchivist' => $extension->getFileUrl('added_to_tubearchivist.svg'),
       ),
       'i18n' => array(
-        'added_article_to_tubearchivist' => _t('ext.tubearchivistButton.notifications.added_article_to_tubearchivist', '%s', '%s'),
-        'failed_to_add_article_to_tubearchivist' => _t('ext.tubearchivistButton.notifications.failed_to_add_article_to_tubearchivist', '%s'),
+        'added_video_to_tubearchivist' => _t('ext.tubearchivistButton.notifications.added_video_to_tubearchivist', '%s', '%s'),
+        'failed_to_add_video_to_tubearchivist' => _t('ext.tubearchivistButton.notifications.failed_to_add_video_to_tubearchivist', '%s'),
         'ajax_request_failed' => _t('ext.tubearchivistButton.notifications.ajax_request_failed'),
-        'article_not_found' => _t('ext.tubearchivistButton.notifications.article_not_found'),
-        'relog_required' => _t('ext.tubearchivistButton.notifications.relog_required'),
+        'video_not_found' => _t('ext.tubearchivistButton.notifications.video_not_found'),
       )
     ));
 
@@ -29,46 +28,6 @@ class FreshExtension_tubearchivistButton_Controller extends Minz_ActionControlle
     $this->view->_path('tubearchivistButton/vars.js');
 
     header('Content-Type: application/javascript; charset=utf-8');
-  }
-
-  public function requestAccessAction(): void
-  {
-    $instance_url = Minz_Request::paramString('tubearchivist_instance_url');
-    $api_token = Minz_Request::paramString('tubearchivist_api_token');
-    $button_location = Minz_Request::paramString('tubearchivist_button_location');
-
-    // Handle leading slash
-    if (substr($instance_url, -1) == '/') {
-      $instance_url = substr($instance_url, 0, -1);
-    }
-
-    FreshRSS_Context::userConf()->_attribute('tubearchivist_instance_url', $instance_url);
-    FreshRSS_Context::userConf()->_attribute('tubearchivist_api_token', $api_token);
-    FreshRSS_Context::userConf()->_attribute('tubearchivist_button_location', $button_location);
-    FreshRSS_Context::userConf()->save();
-
-    $result = $this->curlGetRequest('/profile');
-    $url_redirect = array('c' => 'extension', 'a' => 'configure', 'params' => array('e' => 'TubeArchivist Button'));
-    if ($result['status'] == 200) {
-      FreshRSS_Context::userConf()->_attribute('tubearchivist_username', $result['response']->user->username);
-      FreshRSS_Context::userConf()->save();
-
-      Minz_Request::good(_t('ext.tubearchivistButton.notifications.authorized_success'), $url_redirect);
-      return;
-    }
-
-    Minz_Request::bad(_t('ext.tubearchivistButton.notifications.request_access_failed', $result['status']), $url_redirect);
-  }
-
-  public function revokeAccessAction(): void
-  {
-    FreshRSS_Context::userConf()->_attribute('tubearchivist_instance_url');
-    FreshRSS_Context::userConf()->_attribute('tubearchivist_api_token');
-    FreshRSS_Context::userConf()->_attribute('tubearchivist_username');
-    FreshRSS_Context::userConf()->save();
-
-    $url_redirect = array('c' => 'extension', 'a' => 'configure', 'params' => array('e' => 'TubeArchivist Button'));
-    Minz_Request::good(_t('ext.tubearchivistButton.notifications.authorization_revoked'), $url_redirect);
   }
 
   public function addAction(): void
@@ -84,80 +43,24 @@ class FreshExtension_tubearchivistButton_Controller extends Minz_ActionControlle
       return;
     }
 
-    $behavior = FreshRSS_Context::userConf()->attributeString("tubearchivist_behavior");
-
-    // TO BE REMOVED:
-    // Update missing entry after update
-    if ($behavior == "") {
-      FreshRSS_Context::userConf()->_attribute('tubearchivist_behavior', "smart");
-      FreshRSS_Context::userConf()->save();
-    }
-
-    $post_data = $this->shouldSendContent($entry, $behavior)
-      ? array(
-        'url' => trim($entry->link()) !== ""
-          ? $entry->link()
-          : $entry->feed()->url(false),
-        'html' => $entry->content(),
-        'title' => $entry->title(),
+    $post_data = array(
+      'data' => array(
+        array(
+          'youtube_id' => $entry->link(),
+          'status' => 'pending',
+        )
       )
-      : array(
-        'url' => $entry->link(),
-      );
+    );
 
     // Errors are handled in the JS
-    $result = $this->curlPostRequest('/bookmarks', $post_data);
+    $result = $this->curlPostRequest('/download/', $post_data);
     $result['response'] = array(
-      'title' => $entry->title(),
-      'bookmarkId' => $result['bookmarkId'] ?? null,
+      'message' => $result['message'] ?? null, 
+      'task_id' => $result['task_id'] ?? null,
+      'status' => $result['status'] ?? null,
+      'error' => $result['error'] ?? null,
     );
     echo json_encode($result);
-  }
-
-  private function shouldSendContent(FreshRSS_Entry $entry, string $behavior): bool
-  {
-    if (trim($entry->link()) === "") {
-      // Force content behavior on entries without link
-      return true;
-    }
-
-    return $behavior === "content"
-      || ($behavior === "smart" && $this->isFeedAuthenticated($entry->feed()));
-  }
-
-  private function isFeedAuthenticated(FreshRSS_Feed $feed): bool
-  {
-    if ($feed->httpAuth(true) !== '') {
-      return true;
-    }
-
-    // TODO: tokens would be missed (tokens like X-API_KEY, ...)
-    // Check HTTP Headers
-    $curlParams = $feed->attributeArray('curl_params');
-    if (is_array($curlParams)) {
-      $httpHeaders = $curlParams[CURLOPT_HTTPHEADER] ?? null;
-      if (is_array($httpHeaders)) {
-        foreach ($httpHeaders as $header) {
-          if (is_string($header) && stripos($header, 'Authorization:') === 0) {
-            return true;
-          }
-        }
-      }
-    }
-
-    // Check URL params
-    $parts = parse_url($feed->url());
-    if (!empty($parts['query'])) {
-      $query = [];
-      parse_str($parts['query'], $query);
-      foreach (array_keys($query) as $queryParam) {
-        if (is_string($queryParam) && preg_match('/token|auth|access|key/i', $queryParam)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
   }
 
   /**
@@ -169,7 +72,7 @@ class FreshExtension_tubearchivistButton_Controller extends Minz_ActionControlle
     return array(
       'Content-Type: application/json; charset=UTF-8',
       'X-Accept: application/json',
-      "Authorization: Bearer " . $api_token,
+      "Authorization: Token " . $api_token,
     );
   }
 
@@ -188,29 +91,6 @@ class FreshExtension_tubearchivistButton_Controller extends Minz_ActionControlle
   }
 
   /**
-   * @return array<string,mixed>
-   */
-  private function curlGetRequest(string $endpoint): array
-  {
-    $instance_url = FreshRSS_Context::userConf()->attributeString('tubearchivist_instance_url');
-    $curl = $this->getCurlBase($instance_url . "/api" . $endpoint);
-
-    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
-
-    $response = curl_exec($curl);
-    $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
-    $response_header = substr($response, 0, $header_size);
-    $response_body = substr($response, $header_size);
-    $response_headers = $this->httpHeaderToArray($response_header);
-
-    return array(
-      'response' => json_decode($response_body),
-      'status' => curl_getinfo($curl, CURLINFO_HTTP_CODE),
-      'errorCode' => isset($response_headers['x-error-code']) ? intval($response_headers['x-error-code']) : curl_getinfo($curl, CURLINFO_HTTP_CODE)
-    );
-  }
-
-  /**
    * @param array<string,mixed> $post_data
    * @return array<string,mixed>
    */
@@ -222,7 +102,9 @@ class FreshExtension_tubearchivistButton_Controller extends Minz_ActionControlle
     curl_setopt($curl, CURLOPT_POST, true);
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($post_data));
 
+
     $response = curl_exec($curl);
+    error_log($response);
 
     $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
     $response_header = substr($response, 0, $header_size);
@@ -231,7 +113,6 @@ class FreshExtension_tubearchivistButton_Controller extends Minz_ActionControlle
 
     return array(
       'response' => json_decode($response_body),
-      'bookmarkId' => $response_headers['bookmark-id'] ?? null,
       'status' => curl_getinfo($curl, CURLINFO_HTTP_CODE),
       'errorCode' => isset($response_headers['x-error-code'])
         ? intval($response_headers['x-error-code'])

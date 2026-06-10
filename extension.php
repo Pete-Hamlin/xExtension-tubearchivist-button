@@ -45,19 +45,6 @@ class TubeArchivistButtonExtension extends Minz_Extension
         return;
     }
 
-    $tubearchivist_behavior = Minz_Request::paramString('tubearchivist_behavior');
-    switch ($tubearchivist_behavior) {
-      case "smart":
-      case "link":
-      case "content":
-        FreshRSS_Context::userConf()->_attribute('tubearchivist_behavior', $tubearchivist_behavior);
-        FreshRSS_Context::userConf()->save();
-        break;
-      default:
-        Minz_Request::bad(_t('ext.tubearchivistButton.notifications.changes_failed', $tubearchivist_behavior), $url_redirect);
-        return;
-    }
-
     $url_redirect = array('c' => 'extension');
     Minz_Request::good(_t('ext.tubearchivistButton.notifications.changes_saved_sucessfully'), $url_redirect);
   }
@@ -76,14 +63,6 @@ class TubeArchivistButtonExtension extends Minz_Extension
   public function shouldBeShown(string $entryName): bool
   {
     $headerLocation = FreshRSS_Context::userConf()->attributeString('tubearchivist_button_location');
-
-    // TO BE REMOVED:
-    // Update missing entry after update
-    if ($headerLocation == "") {
-      FreshRSS_Context::userConf()->_attribute('tubearchivist_button_location', "header_bottom");
-      FreshRSS_Context::userConf()->save();
-      return true;
-    }
 
     if ($headerLocation == "hidden") {
       return false;

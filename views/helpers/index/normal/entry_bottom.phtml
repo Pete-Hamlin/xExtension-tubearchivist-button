@@ -27,7 +27,7 @@
 
 		if ($extension->isConfigured()) {
 			?>
-			<li <?= $extension->shouldBeShown("bottom") ? "class=\"item manage\"" : "class=\"item manage rb_disabled\"" ?>><?php
+			<li <?= str_contains($this->entry->link(), "youtube.com") && $extension->shouldBeShown("bottom") ? "class=\"item manage\"" : "class=\"item manage rb_disabled\"" ?>><?php
 				$arUrl = array('c' => 'tubearchivistButton', 'a' => 'add', 'params' => array('id' => $this->entry->id()));
 				?><a class="item-element tubearchivistButton" href="<?php echo Minz_Url::display($arUrl); ?>"><div class="rb_lds-dual-ring rb_disabled"></div><img class="icon" src="<?= $tubearchivist_button_icon ?>" /></a><?php
 				?></li>
