@@ -54,12 +54,6 @@ class FreshExtension_tubearchivistButton_Controller extends Minz_ActionControlle
 
     // Errors are handled in the JS
     $result = $this->curlPostRequest('/download/', $post_data);
-    $result['response'] = array(
-      'message' => $result['message'] ?? null, 
-      'task_id' => $result['task_id'] ?? null,
-      'status' => $result['status'] ?? null,
-      'error' => $result['error'] ?? null,
-    );
     echo json_encode($result);
   }
 
