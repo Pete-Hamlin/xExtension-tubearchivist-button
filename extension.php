@@ -24,9 +24,11 @@ class TubeArchivistButtonExtension extends Minz_Extension
     }
 
     $keyboard_shortcut = Minz_Request::paramString('tubearchivist_shortcut');
+    $instance_url = Minz_Request::paramString('tubearchivist_instance_url');
+    $api_token = Minz_Request::paramString('tubearchivist_api_token');
     FreshRSS_Context::userConf()->_attribute('tubearchivist_shortcut', $keyboard_shortcut);
-    $send_content = Minz_Request::paramString('send_content');
-    FreshRSS_Context::userConf()->_attribute('tubearchivist_content', $send_content);
+    FreshRSS_Context::userConf()->_attribute('tubearchivist_instance_url', $instance_url);
+    FreshRSS_Context::userConf()->_attribute('tubearchivist_api_token', $api_token);
     FreshRSS_Context::userConf()->save();
 
     $button_location = Minz_Request::paramString('tubearchivist_button_location');
