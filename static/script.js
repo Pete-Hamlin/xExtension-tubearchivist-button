@@ -9,8 +9,6 @@ if (document.readyState && document.readyState !== "loading") {
 }
 
 async function documentReady() {
-  // __PRINT_LOC_START
-  console.log("┆documentReady┆ ┊1┊"); // __PRINT_LOC_END
   var tubearchivistButtons = document.querySelectorAll(
     "#stream .flux a.tubearchivistButton",
   );
@@ -90,8 +88,6 @@ async function add_to_tubearchivist(tubearchivistButton, active) {
   loadingAnimation.classList.remove("rb_disabled");
 
   let activeId = active.getAttribute("id");
-  // __PRINT_VAR_START
-  console.log("┆add_to_tubearchivist┆ ╎activeId╎ ┊1┊:", activeId); // __PRINT_VAR_END
   if (pending_entries[activeId]) {
     return;
   }
@@ -108,16 +104,12 @@ async function add_to_tubearchivist(tubearchivistButton, active) {
     }),
   })
     .then(async (response) => {
-      // __PRINT_VAR_START
-      console.log("┆add_to_tubearchivist#(anon)┆ ╎response╎ ┊1┊:", response); // __PRINT_VAR_END
       delete pending_entries[activeId];
 
       tubearchivistButtonImg.classList.remove("rb_disabled");
       loadingAnimation.classList.add("rb_disabled");
 
       if (!response.ok) {
-        // __PRINT_LOC_START
-        console.log("┆add_to_tubearchivist#(anon)#if┆ ┊1┊"); // __PRINT_LOC_END
         requestFailed(activeId, tubearchivistButtonImg, loadingAnimation);
         openNotification(
           tubearchivist_button_vars.i18n.failed_to_add_video_to_tubearchivist.replace(
@@ -130,11 +122,7 @@ async function add_to_tubearchivist(tubearchivistButton, active) {
       }
 
       let json = await response.json();
-      // __PRINT_VAR_START
-      console.log("┆add_to_tubearchivist#(anon)┆ ╎json╎ ┊1┊:", json); // __PRINT_VAR_END
       if (!json) {
-        // __PRINT_LOC_START
-        console.log("┆add_to_tubearchivist#(anon)#if┆ ┊2┊"); // __PRINT_LOC_END
         requestFailed(activeId, tubearchivistButtonImg, loadingAnimation);
         openNotification(
           tubearchivist_button_vars.i18n.failed_to_add_video_to_tubearchivist.replace(
@@ -193,8 +181,6 @@ async function add_to_tubearchivist(tubearchivistButton, active) {
       }
     })
     .catch((e) => {
-      // __PRINT_VAR_START
-      console.log("┆add_to_tubearchivist#(anon)┆ ╎e╎ ┊1┊:", e); // __PRINT_VAR_END
       requestFailed(activeId, tubearchivistButtonImg, loadingAnimation);
     });
 }
