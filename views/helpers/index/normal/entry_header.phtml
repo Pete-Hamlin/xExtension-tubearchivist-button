@@ -32,14 +32,25 @@
     assert($extension instanceof TubeArchivistButtonExtension);
 		$tubearchivist_button_icon = $extension->getFileUrl('add_to_tubearchivist.svg');
 
-		if ($extension->isConfigured()) {
+    // readeck compat
+		$readeck = Minz_ExtensionManager::findExtension('Readeck Button');
+		$readeck_button_icon = $readeck->getFileUrl('add_to_readeck.svg');
+
+		if ($extension->isConfigured() && str_contains($this->entry->link(), "youtube.com")) {
 			?>
-			<li <?= str_contains($this->entry->link(), "youtube.com") && $extension->shouldBeShown("header") ? "class=\"item manage\"" : "class=\"item manage rb_disabled\"" ?>><?php
+			<li <?= $extension->shouldBeShown("header") ? "class=\"item manage\"" : "class=\"item manage rb_disabled\"" ?>><?php
 				$arUrl = array('c' => 'tubearchivistButton', 'a' => 'add', 'params' => array('id' => $this->entry->id()));
 				?><a class="item-element tubearchivistButton" href="<?php echo Minz_Url::display($arUrl); ?>"><div class="rb_lds-dual-ring rb_disabled"></div><img class="icon" src="<?= $tubearchivist_button_icon ?>" /></a><?php
 				?></li>
 			<?php
-		}
+  } else if ($readeck && $readeck->isConfigured()) {
+			?>
+			<li <?= $readeck->shouldBeShown("header") ? "class=\"item manage\"" : "class=\"item manage rb_disabled\"" ?>><?php
+				$arUrl = array('c' => 'readeckButton', 'a' => 'add', 'params' => array('id' => $this->entry->id()));
+				?><a class="item-element tubearchivistButton" href="<?php echo Minz_Url::display($arUrl); ?>"><div class="rb_lds-dual-ring rb_disabled"></div><img class="icon" src="<?= $readeck_button_icon ?>" /></a><?php
+				?></li>
+			<?php
+  }
 
 		if ($topline_favorite) {
 			?><li class="item manage"><?php
